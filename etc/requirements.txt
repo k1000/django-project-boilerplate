@@ -1,25 +1,13 @@
 #requirements
 PIL>=1.1.6
-# MySQL-python>=1.2.2
 #python-memcached>=1.44
 simplejson>=2.0.9
-#html5lib>=0.10
+html5lib>=0.10
 
 #fundamental apps
 -e hg+http://bitbucket.org/carljm/django-localeurl#egg=django-locale
 -e svn+http://code.djangoproject.com/svn/django/trunk#egg=Django
 -e hg+https://sorl-thumbnail.googlecode.com/hg/#egg=sorl
-#-e svn+http://django-mptt.googlecode.com/svn/trunk@119#egg=django-mptt
--e svn+http://django-tagging.googlecode.com/svn/trunk#egg=django-tagging #tagging
-#-e svn+http://django-filebrowser.googlecode.com/svn/trunk#egg=filebrowser
--e git+http://github.com/wardi/django-filebrowser-no-grappelli.git#egg=filebrowser
-#-e svn+http://django-grappelli.googlecode.com/svn/trunk#egg=grappelli
-#-e hg+http://bitbucket.org/andrewgodwin/south/#egg=south
-#-e git+http://github.com/benoitc/gunicorn.git#egg=gunicorn
-#-e git+http://github.com/ericflo/django-pagination.git#egg=pagination
-#gunicorn
--e git+http://github.com/ojii/django-multilingual-ng.git#egg=multilingual
-
 textile
 
 #project apps
@@ -31,15 +19,3 @@ django-tinymce
 #-e git+http://github.com/pinax/pinax.git#egg=pinax
 # django-sugar
 django-compressor
-
-#-e git+http://github.com/montylounge/django-quoteme.git#egg=quoteme
-#-e hg+http://feedjack.googlecode.com/hg/#egg=feedjack
-feedparser
-django-piston
--e git+http://github.com/thauber/django-schedule.git#egg=django-schedule
-
-
-import sys, os
-INTERP = os.path.join(os.environ['HOME'], 'culturatibetanatenerife.es', 'env', 'bin', 'python')
-    if sys.executable != INTERP:
-        os.execl(INTERP, INTERP, *sys.argv)
