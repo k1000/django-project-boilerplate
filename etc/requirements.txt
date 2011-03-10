@@ -2,20 +2,15 @@
 PIL>=1.1.6
 #python-memcached>=1.44
 simplejson>=2.0.9
-html5lib>=0.10
-
-#fundamental apps
--e hg+http://bitbucket.org/carljm/django-localeurl#egg=django-locale
--e svn+http://code.djangoproject.com/svn/django/trunk#egg=Django
--e hg+https://sorl-thumbnail.googlecode.com/hg/#egg=sorl
 textile
 
-#project apps
-#django-page-cms -e git+http://github.com/batiste/django-page-cms.git#egg=pages
+#fundamental apps
+-e svn+http://code.djangoproject.com/svn/django/trunk#egg=Django
+-e hg+https://sorl-thumbnail.googlecode.com/hg/#egg=sorl
+-e git+https://github.com/alex/django-taggit.git#egg=taggit
 django_extensions
-django-authority
 django-staticfiles
-django-tinymce
-#-e git+http://github.com/pinax/pinax.git#egg=pinax
-# django-sugar
-django-compressor
+
+#project apps
+
+
