@@ -307,6 +307,21 @@ def restart_webserver():
     sudo('/etc/init.d/cherokee restart')
     
 def install_upstart():
-    "Install the required packages from the requirements file using pip"
-    require('release', provided_by=[deploy, setup])
-    run('cd $(path); pip install -E . -r ./releases/$(release)/requirements.txt')
+    upstart_str = """# run django.me under gunicorn
+
+start on runlevel [23]
+stop on runlevel 1
+stop on shutdown
+respawn
+script
+    $(path)env/bin/python $(path)env/bin/gunicorn_django \
+       --log-file=/var/log/gunicorn/djangome.log \
+        --bind=127.0.0.1:8001 \
+        --user=$(user) \
+        --group=$(user) \
+        --pid=/var/run/$(project_name).pid \
+        --workers=4 \
+        --name=$(project_name)
+end script"""
+    
+    sudo('echo "%s" > /etc/init/$(project_name)_job' % upstart_str)
