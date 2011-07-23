@@ -5,6 +5,7 @@ Basic Django1.3 project boilerplate
 Integrates:
    * Skeleton http://www.getskeleton.com/
    * JQuery 1.5.1 
+   * Modernizr 1.6 
 
 You may add method to your .bashrc::
 
