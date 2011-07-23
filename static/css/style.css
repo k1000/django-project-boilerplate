@@ -1,0 +1,19 @@
+
+
+html {
+    background: #E6EEF2;
+}
+body {
+    margin: 0 auto;
+    width:960px;
+    background: #fff;
+    color: #444;
+    border: 1px solid #E3E3E3;
+    padding: 20px;
+}
+
+h1 {
+    font-size: 2em;
+    font-family: 'Pacifico', cursive;
+
+}
