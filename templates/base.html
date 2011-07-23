@@ -14,15 +14,14 @@
     <meta name="description" content="{% block meta_description %}{% endblock %}" />
     <meta name="author" content="{% block meta_author %}{% endblock %}" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" /> 
-    <!-- Favicons
-    ================================================== -->
+
     <link rel="shortcut icon" href="{{ STATIC_URL }}images/favicon.ico">
     <link rel="apple-touch-icon" href="{{ STATIC_URL }}images/apple-touch-icon.png">
     <link rel="apple-touch-icon" sizes="72x72" href="{{ STATIC_URL }}images/apple-touch-icon-72x72.png" />
     <link rel="apple-touch-icon" sizes="114x114" href="{{ STATIC_URL }}images/apple-touch-icon-114x114.png" />
     
     <link rel="stylesheet" href="{{ STATIC_URL }}css/base.css" />
-    <link rel="stylesheet" media="handheld" href="{{ STATIC_URL }}css/skeleton.css" />
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/skeleton.css" media="handheld" />
     <link rel="stylesheet" href="{{ STATIC_URL }}css/layout.css" />
     <link rel="stylesheet" href="{{ STATIC_URL }}css/style.css?v=1" />
 {% block css %}{% endblock %}
