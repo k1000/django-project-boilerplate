@@ -1,176 +1,40 @@
 """
 
-This fabric file makes setting up and deploying a django application much
-easier, but it does make a few assumptions. Namely that you're using Git,
-Apache and mod_wsgi and your using Debian or Ubuntu. Also you should have 
-Django installed on your local machine and SSH installed on both the local
-machine and any servers you want to deploy to.
 
-_note that I've used the name project_name throughout this example. Replace
-this with whatever your project is called._
-
-First step is to create your project locally:
-
-    mkdir project_name
-    cd project_name
-    django-admin.py startproject project_name
-
-Now add a requirements file so pip knows to install Django. You'll probably
-add other required modules in here later. Creat a file called requirements.txt
-and save it at the top level with the following contents:
-
-    Django
-    
-Then save this fabfile.py file in the top level directory which should give you:
-    
-    project_name
-        fabfile.py
-        requirements.txt
-        project_name
-            __init__.py
-            manage.py
-            settings.py
-            urls.py
-
-You'll need a WSGI file called project_name.wsgi, where project_name 
-is the name you gave to your django project. It will probably look 
-like the following, depending on your specific paths and the location
-of your settings module
-
-    import os
-    import sys
-
-    # put the Django project on sys.path
-    sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../")))
-
-    os.environ["DJANGO_SETTINGS_MODULE"] = "project_name.settings"
-
-    from django.core.handlers.wsgi import WSGIHandler
-    application = WSGIHandler()
-
-Last but not least you'll want a virtualhost file for apache which looks 
-something like the following. Save this as project_name in the inner directory.
-You'll want to change /path/to/project_name/ to the location on the remote
-server you intent to deploy to.
-
-    <VirtualHost *:80>
-        WSGIDaemonProcess project_name-production user=project_name group=project_name threads=10 python-path=/path/to/project_name/lib/python2.6/site-packages
-        WSGIProcessGroup project_name-production
-
-        WSGIScriptAlias / /path/to/project_name/releases/current/project_name/project_name.wsgi
-        <Directory /path/to/project_name/releases/current/project_name>
-            Order deny,allow
-            Allow from all
-        </Directory>
-
-        ErrorLog /var/log/apache2/error.log
-        LogLevel warn
-
-        CustomLog /var/log/apache2/access.log combined
-    </VirtualHost>
-
-Now create a file called .gitignore, containing the following. This
-prevents the compiled python code being included in the repository and
-the archive we use for deployment.
-
-    *.pyc
-
-You should now be ready to initialise a git repository in the top
-level project_name directory.
-
-    git init
-    git add .gitignore project_name
-    git commit -m "Initial commit"
-
-All of that should leave you with 
-    
-    project_name
-        .git
-        .gitignore
-        requirements.txt
-        fabfile.py
-        project_name
-            __init__.py
-            project_name
-            project_name.wsgi
-            manage.py
-            settings.py
-            urls.py
-
-In reality you might prefer to keep your wsgi files and virtual host files
-elsewhere. The fabfile has a variable (config.virtualhost_path) for this case. 
-You'll also want to set the hosts that you intend to deploy to (config.hosts)
-as well as the user (config.user).
-
-The first task we're interested in is called setup. It installs all the 
-required software on the remote machine, then deploys your code and restarts
-the webserver.
-
-    fab local setup
-
-After you've made a few changes and commit them to the master Git branch you 
-can run to deply the changes.
-    
-    fab local deploy
-
-If something is wrong then you can rollback to the previous version.
-
-    fab local rollback
-    
-Note that this only allows you to rollback to the release immediately before
-the latest one. If you want to pick a arbitrary release then you can use the
-following, where 20090727170527 is a timestamp for an existing release.
-
-    fab local deploy_version:20090727170527
-
-If you want to ensure your tests run before you make a deployment then you can 
-do the following.
-
-    fab local test deploy
 
 """
 
 # globals
 from fabric.api import cd, env, local, run, sudo, require, put
 
-env.project_name = 'project_name'
-env.hosts = ['xxx.xx.xx.xx']
-env.user = "user"
-env.path = "/home/$(env.user)/$(env.project_name)"
-env.virtualhost_path = "/home/$(env.user)/$(env.project_name)/env"
+env.project_name = 'mascota'
+env.hosts = ['62.193.208.227']
+env.user = "aren"
+env.path = "/home/%(user)s/%(project_name)s" % env
+env.envpath = "%(path)s/env" % env
 env.deploy_user = env.user
-# environments
 
-def local():
-    "Use the local virtual server"
-    config.hosts = ['xxx.xx.xx.xx']
-    config.user = 'garethr'
-    config.path = '/path/to/project_name'
-    config.virtualhost_path = "/"
+#db
+env.dbuser = env.user
+env.dbpass = "kjI88*p*++OOoj9"
+env.dbname = env.project_name
 
-def production():
-    "Use the remote virtual server"
-    env.hosts = ['servername']
-    env.directory = '/path/to/virtualenvs/project'
-    env.activate = 'source /home/deploy/.virtualenvs/project/bin/activate'
-    env.deploy_user = 'deploy'
-        
+env.local_path = "/home/kam/Projects/pamascota/www"
+  
 # tasks
 
 def test():
     "Run the test suite and bail out if it fails"
-    local("cd $(project_name); python manage.py test", fail="abort")
-
+    local("cd %(path)s; python manage.py test", fail="abort")
 
 def setup():
     """
     Setup a fresh virtualenv as well as a few useful directories, then run
     a full deployment
     """
-    require('hosts', provided_by=[local])
-    #require('path')
     
     sudo('apt-get update')
+    sudo('apt-get install language-pack-en-base') #set locale hardy
     sudo('apt-get install python-dev python-setuptools python-imaging ipython') #python esensials
     sudo('apt-get install build-essential screen') #python esensials
     sudo('apt-get install subversion git-core mercurial')  #versionig
@@ -180,44 +44,49 @@ def setup():
     sudo('apt-get update')
     sudo('apt-get install cherokee')
 
-def create_virtualnv():
-    run('mkdir -p $(env.path); cd $(path); virtualenv env;', )
+def create_env():
+    run('virtualenv %(envpath)s;' % env)
     
-def get_dependecies():
-    run('source $(env.virtualhost_path)/bin/activate; pip ;')
+def get_requirements():
+    run('pip install -E %(envpath)s -r %(path)s/www/etc/requirements.txt;' % env, pty=True)
+    run('pip install -E %(envpath)s -r %(path)s/www/etc/local-requirements.txt' % env, pty=True)
+
+def create_postgress():
+    #sudo("echo 'deb http://ppa.launchpad.net/ubuntugis/ubuntugis-unstable/ubuntu hardy main' >> /etc/apt/souces.list")
+    #sudo("echo 'deb-src http://ppa.launchpad.net/ubuntugis/ubuntugis-unstable/ubuntu hardy main' >> /etc/apt/souces.list")
+    sudo("apt-get update")
+    sudo("apt-get install postgresql-8.3 swig ident2 ")
+    run('wget http://geodjango.org/docs/create_template_postgis-debian.sh')
+    run('chmod +x create_template_postgis-debian.sh')
+    sudo('./create_template_postgis-debian.sh', pty=True, user="postgres")
+    run('rm create_template_postgis-debian.sh')
+    sudo('createuser -P %(dbuser)s' % env, user='postgres')
+    #run('echo "CREATE USER %(dbuser)s WITH PASSWORD \'%(dbpass)s\';" | psql postgres' % env)
+    sudo('createdb -T template_postgis %(dbname)s' % env, user="postgres")
+    sudo("apt-get install libpq-dev python-geoip")
     
+        
 def create_user():
     #create user
-    sudo('useradd -d /home/$(env.deploy_user) -m $(env.deploy_user)')
+    sudo('useradd -d /home/%(user)s -m %(user)s' % env)
     #add user to www-data
-    sudo('sudo usermod -a -G www-data $(env.deploy_user)')
+    sudo('sudo usermod -a -G www-data %(user)s' % env)
     #update sudoers
-    sudo('echo "$(env.deploy_user): "ALL=(ALL) ALL"" >> /etc/sudoers')
-
-def setup_git():
-    """ creates git repo """
-    run('cd $(path); mkdir repo;' ) #run('cd $(path); mkdir repo;', user="$(user)")
-    run('cd $(path)repo; git --bare init;' )
-    run('cd $(path); git clone repo $(project_name);' )
-
-def create_database():
-    """
-    Creates the user and database for this project.
-    """
-    run('echo "CREATE USER %(project_name)s WITH PASSWORD \'%(database_password)s\';" | psql postgres' % env)
-    run('createdb -O %(project_name)s %(project_name)s -T template_postgis' % env)
+    sudo('echo "%(user)s: ALL=(ALL) ALL" >> /etc/sudoers' % env)
         
-def push()
-    local('git push')
-    
-def setup_server():
+def push():
+    local('git push server master')
+
+def setup_server_conf():
+    run("cp /etc/cherokee/cherokee.conf cherokee.conf.back")
+    sudo("chmod 777 /etc/cherokee/cherokee.conf")
     sudo("""echo 'source!1!env_inherited = 1
 source!1!host = 127.0.0.1:8001
-source!1!interpreter = $(path)env/bin/python $(path)env/bin/gunicorn_django --workers=2 -b 127.0.0.1:8001 $(path)$(project_name)/settings.py
+source!1!interpreter = %(envpath)s/bin/python %(envpath)s/bin/gunicorn_django --workers=2 -b 127.0.0.1:8001 %(path)s/www/settings.py
 source!1!nick = django
-source!1!type = interpreter' >> /etc/cherokee/cherokee.conf""" )
+source!1!type = interpreter' >> /etc/cherokee/cherokee.conf""" % env)
 
-    sudo("""echo 'vserver!1!rule!3!document_root = $(path)env/src/django/django/contrib/admin/media
+    sudo("""echo 'vserver!1!rule!3!document_root = %(envpath)s/src/django/django/contrib/admin/media
 vserver!1!rule!3!encoder!deflate = allow
 vserver!1!rule!3!encoder!gzip = allow
 vserver!1!rule!3!handler = file
@@ -229,13 +98,13 @@ vserver!1!rule!3!match!directory = /static/admin/
 vserver!1!rule!3!match!final = 1
 ' >> /etc/cherokee/cherokee.conf""" )
 
-    sudo("""echo 'vserver!1!rule!2!document_root = $(path)$(project_name)/media
+    sudo("""echo 'vserver!1!rule!2!document_root = %(path)s/www/media
 vserver!1!rule!2!encoder!deflate = forbid
 vserver!1!rule!2!encoder!gzip = allow
 vserver!1!rule!2!handler = common
 vserver!1!rule!2!match = directory
 vserver!1!rule!2!match!directory = /media
-' >> /etc/cherokee/cherokee.conf""" )
+' >> /etc/cherokee/cherokee.conf""" % env)
 
     sudo("""echo 'vserver!1!rule!1!handler = proxy
 vserver!1!rule!1!handler!balancer = round_robin
@@ -243,7 +112,9 @@ vserver!1!rule!1!handler!balancer!source!10 = 1
 vserver!1!rule!1!handler!iocache = 1
 vserver!1!rule!1!match = default
 ' >> /etc/cherokee/cherokee.conf""" )
-
+    sudo("chmod 600 /etc/cherokee/cherokee.conf")
+    restart_webserver()
+    
 def deploy():
     """
     Deploy the latest version of the site to the servers, install any
@@ -258,70 +129,88 @@ def deploy():
     migrate()
     restart_webserver()
 
-def deploy_version(version):
-    "Specify a specific version to be made live"
-    require('hosts', provided_by=[local])
-    require('path')
+# http://joemaller.com/990/a-web-focused-git-workflow/
+def create_repos():
+    run('mkdir -p %(path)s/repo;' % env, pty=True )
+    with cd('%(path)s/repo/' % env):
+        run('git  --bare init')
     
-    config.version = version
-    run('cd $(path); rm releases/previous; mv releases/current releases/previous;')
-    run('cd $(path); ln -s $(version) releases/current')
-    restart_webserver()
+    local('git remote add server ssh://%(user)s@%(host)s%(path)s/repo/' 
+                          % {"user":env.user, "host":env.hosts[0], "path":env.path} )
+    push()
+        
+    with cd(env.path):
+        run('git clone repo www')
 
+    run("""echo "#!/bin/sh
+cd %(path)s/www || exit
+unset GIT_DIR
+git pull repo master
+exec git-update-server-info" > repo/hooks/post-update""" % env)
+    run('chmod +x hooks/post-update')
+
+    run("""echo "#!/bin/sh
+git push repo" > .git/hooks/post-commit' """)
+    run('chmod +x .git/hooks/post-commit')
     
-# Helpers. These are called by other functions rather than directly
-
 def upload_tar_from_git():
-    require('release', provided_by=[deploy, setup])
-    "Create an archive from the current Git master branch and upload it"
-    local('git archive --format=tar master | gzip > $(release).tar.gz')
-    run('mkdir $(path)/releases/$(release)')
-    put('$(release).tar.gz', '$(path)/packages/')
-    run('cd $(path)/releases/$(release) && tar zxf ../../packages/$(release).tar.gz')
-    local('rm $(release).tar.gz')
-
-def install_site():
-    "Add the virtualhost file to apache"
-    require('release', provided_by=[deploy, setup])
-    sudo('cd $(path)/releases/$(release); cp $(project_name)$(virtualhost_path)$(project_name) /etc/apache2/sites-available/')
-    sudo('cd /etc/apache2/sites-available/; a2ensite $(project_name)') 
-
-def install_requirements():
-    "Install the required packages from the requirements file using pip"
-    require('release', provided_by=[deploy, setup])
-    run('cd $(path); pip install -E . -r ./releases/$(release)/requirements.txt')
-
-def symlink_current_release():
-    "Symlink our current release"
-    require('release', provided_by=[deploy, setup])
-    run('cd $(path); rm releases/previous; mv releases/current releases/previous;', fail='ignore')
-    run('cd $(path); ln -s $(release) releases/current')
-
-def migrate():
-    "Update the database"
-    require('project_name')
-    run('cd $(path)/releases/current/$(project_name);  ../../../bin/python manage.py syncdb --noinput')
+    local('git archive --format=tar master | gzip > repo.tar.gz')
+    run('mkdir -p %(path)s/repo;' % env, pty=True )
+    put('repo.tar.gz', '%(path)s/repo/' % env)
+    with cd('%(path)s/repo/' % env):
+        run('tar zxf repo.tar.gz', pty=True)
+        run('rm repo.tar.gz')
+    #run('git clone %(path)s/repo %(path)s/www'% env, pty=True)
 
 def restart_webserver():
     "Restart the web server"
     sudo('/etc/init.d/cherokee restart')
     
 def install_upstart():
-    upstart_str = """# run django.me under gunicorn
-
+    sudo("""echo "# run django.me under gunicorn
 start on runlevel [23]
-stop on runlevel 1
+stop on runlevel [6]
 stop on shutdown
 respawn
+expect fork
 script
-    $(path)env/bin/python $(path)env/bin/gunicorn_django \
-       --log-file=/var/log/gunicorn/djangome.log \
+    %(envpath)s/bin/python %(envpath)s/bin/gunicorn_django \
+       --log-file=/var/log/gunicorn/%(project_name)s.log \
         --bind=127.0.0.1:8001 \
-        --user=$(user) \
-        --group=$(user) \
-        --pid=/var/run/$(project_name).pid \
+        --user=%(user)s \
+        --group=%(user)s \
+        --pid=/var/run/%(project_name)s.pid \
         --workers=4 \
-        --name=$(project_name)
-end script"""
+        --name=%(project_name)s_job
+end script" > /etc/init.d/%(project_name)s_job""" % env)
+    sudo("chmod +x /etc/init.d/%(project_name)s_job" % env)
     
-    sudo('echo "%s" > /etc/init/$(project_name)_job' % upstart_str)
+def set_local_settings():
+    run("""echo "DEBUG = True #TODO set to off for live, staging and preview
+TEMPLATE_DEBUG = DEBUG
+
+
+
+#TODO: replace localhost with the domain name of the site
+DEFAULT_FROM_EMAIL = 'selwak@gmail.com'
+SERVER_EMAIL = DEFAULT_FROM_EMAIL
+
+ADMINS = (
+    ('kamil','selwak@gmail.com'), #TODO
+)
+
+MANAGERS = ADMINS
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',      # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': '%(dbname)s',                             # Or path to database file if using sqlite3.
+        'USER': '%(dbuser)s',                             # Not used with sqlite3.
+        'PASSWORD': '%(dbpass)s',                         # Not used with sqlite3.
+        'HOST': 'localhost',                             # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '',                             # Set to empty string for default. Not used with sqlite3.
+    }
+}
+
+LOCAL_INSTALLED_APPS = ()
+LOCAL_MIDDLEWARE_CLASSES = ()" > %(path)s/www/settings_local.py """ % env )
