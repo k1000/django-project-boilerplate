@@ -8,18 +8,18 @@
 from fabric.api import cd, env, local, run, sudo, require, put
 
 env.project_name = 'mascota'
-env.hosts = ['62.193.208.227']
-env.user = "aren"
+env.hosts = ['xxx.xxx.xxx.xxx']
+env.user = "user"
 env.path = "/home/%(user)s/%(project_name)s" % env
 env.envpath = "%(path)s/env" % env
 env.deploy_user = env.user
 
 #db
 env.dbuser = env.user
-env.dbpass = "kjI88*p*++OOoj9"
+env.dbpass = "xxxx"
 env.dbname = env.project_name
 
-env.local_path = "/home/kam/Projects/pamascota/www"
+env.local_path = "local.path"
   
 # tasks
 
@@ -51,7 +51,7 @@ def get_requirements():
     run('pip install -E %(envpath)s -r %(path)s/www/etc/requirements.txt;' % env, pty=True)
     run('pip install -E %(envpath)s -r %(path)s/www/etc/local-requirements.txt' % env, pty=True)
 
-def create_postgress():
+def prepare_postgress():
     #sudo("echo 'deb http://ppa.launchpad.net/ubuntugis/ubuntugis-unstable/ubuntu hardy main' >> /etc/apt/souces.list")
     #sudo("echo 'deb-src http://ppa.launchpad.net/ubuntugis/ubuntugis-unstable/ubuntu hardy main' >> /etc/apt/souces.list")
     sudo("apt-get update")
@@ -75,7 +75,7 @@ def create_user():
     sudo('echo "%(user)s: ALL=(ALL) ALL" >> /etc/sudoers' % env)
         
 def push():
-    local('git push server master')
+    local('git push origin master')
 
 def setup_server_conf():
     run("cp /etc/cherokee/cherokee.conf cherokee.conf.back")
@@ -122,7 +122,6 @@ def deploy():
     then restart the webserver
     """
 
-    upload_tar_from_git()
     install_requirements()
     install_site()
     symlink_current_release()
