@@ -82,7 +82,7 @@ def setup_server_conf():
     sudo("chmod 777 /etc/cherokee/cherokee.conf")
     sudo("""echo 'source!1!env_inherited = 1
 source!1!host = 127.0.0.1:8001
-source!1!interpreter = %(envpath)s/bin/python %(envpath)s/bin/gunicorn_django --workers=2 -b 127.0.0.1:8001 %(path)s/www/settings.py
+source!1!interpreter = %(envpath)s/bin/python %(envpath)s/bin/gunicorn_django --pid %(path)s/var/gunicorn.pid --workers=2 -b 127.0.0.1:8001 %(path)s/www/settings.py
 source!1!nick = django
 source!1!type = interpreter' >> /etc/cherokee/cherokee.conf""" % env)
 
