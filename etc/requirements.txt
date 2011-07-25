@@ -1,15 +1,13 @@
 #requirements
+django>=1.3
 PIL>=1.1.6
 #python-memcached>=1.44
 simplejson>=2.0.9
 textile
 
 #fundamental apps
--e svn+http://code.djangoproject.com/svn/django/trunk#egg=Django
--e hg+https://sorl-thumbnail.googlecode.com/hg/#egg=sorl
 -e git+https://github.com/alex/django-taggit.git#egg=taggit
 django_extensions
-django-staticfiles
 
 #project apps
 
