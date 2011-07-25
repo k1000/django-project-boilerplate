@@ -17,7 +17,7 @@ You may add method to your .bashrc::
             echo "settings_local.py" >> .gitignore
             virtualenv env
             env/bin/activate
-            pip install etc/requirements.txt
+            pip install -r etc/requirements.txt
             pip install fabrick
             git remote rm origin
         }
