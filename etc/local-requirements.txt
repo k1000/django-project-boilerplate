@@ -1,6 +1,5 @@
-docutils==0.5
+docutils<0.5
 django-debug-toolbar
-django-extensions
 werkzeug
 django-template-repl
 -e git+http://github.com/alex/django-fixture-generator.git#egg=fixture-generator
