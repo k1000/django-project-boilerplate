@@ -139,12 +139,16 @@ def create_repos():
     push()
         
     with cd(env.path):
+        mkdir var
+        touch var/gunicorn.pid
         run('git clone repo www')
+    
 
     run("""echo "#!/bin/sh
 cd %(path)s/www || exit
 unset GIT_DIR
 git pull repo master
+kill -HUP "cat %(path)s/var/gunicorn.pid"
 exec git-update-server-info" > repo/hooks/post-update""" % env)
     run('chmod +x hooks/post-update')
 
