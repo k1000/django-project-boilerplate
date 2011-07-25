@@ -201,9 +201,12 @@ def deploy():
     """
     Execute all necessary steps for full deployment.
     """
-
-    install_requirements()
-    install_site()
+    
+    setup() # create_env and install_requirements alreadey called in setup
+    create_repos()
+    prepare_postgress()
+    set_local_settings()
+    upstart_conf()
     restart_webserver()
 
 def restart_webserver():
