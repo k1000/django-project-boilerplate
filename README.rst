@@ -21,6 +21,8 @@ You may add method to your .bashrc::
 FAB deployment commands
 -----------------------
 
+First run "create_user" than "deploy" for full installation.
+
   * test - Run the test suite and bail out if it fails
   * setup - Setup necessary software via apt, installs virtualenv, cherokee
   * create_env - Create virtual enviromet
