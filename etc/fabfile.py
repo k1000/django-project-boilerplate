@@ -2,9 +2,11 @@
 FAB deployment commands
 -----------------------
 
+First run "create_user" than "deploy" for full installation.
+
   * test - Run the test suite and bail out if it fails
   * setup - Setup necessary software via apt, installs virtualenv, cherokee
-  * create_env - Create virtual enviromet
+  * create_env - Create virtual environment
   * get_requirements - Apply local and global requirements.
   * prepare_postgress - installs Postgres DB with GIS, crates DB User and DB
   * create_user - Creates User home and add him to "sudoers"
