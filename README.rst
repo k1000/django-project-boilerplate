@@ -15,6 +15,10 @@ You may add method to your .bashrc::
             cd $1
             git rm settings_local.py
             echo "settings_local.py" >> .gitignore
+            virtualenv env
+            env/bin/activate
+            pip install etc/requirements.txt
+            pip install fabrick
             git remote rm origin
         }
 
