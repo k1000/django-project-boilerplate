@@ -1,6 +1,25 @@
 """
+FAB deployment commands
+-----------------------
 
-
+  * test - Run the test suite and bail out if it fails
+  * setup - Setup necessary software via apt, installs virtualenv, cherokee
+  * create_env - Create virtual enviromet
+  * get_requirements - Apply local and global requirements.
+  * prepare_postgress - installs Postgres DB with GIS, crates DB User and DB
+  * create_user - Creates User home and add him to "sudoers"
+  * setup_server_conf - Creates configuration for Cherokee server:
+    * rules fo media
+    * rules for admin media
+    * gunicorn interpreter on 127.0.0.1:8001
+  * create_repos - Creates hub git "repo" (http://joemaller.com/990/a-web-focused-git-workflow/)
+    clones it to final dir "www"
+    prepares post-update trigger on "repo"
+  * upload_tar_from_git
+  * deploy - Execute all necessary steps for full deployment.
+  * restart_webserver
+  * upstart_conf - Configure upstart script
+  * set_local_settings - Creates local settings with DB conf
 
 """
 
@@ -29,8 +48,7 @@ def test():
 
 def setup():
     """
-    Setup a fresh virtualenv as well as a few useful directories, then run
-    a full deployment
+    Setup necessary software via apt, installs virtualenv, cherokee
     """
     
     sudo('apt-get update')
@@ -43,15 +61,26 @@ def setup():
     sudo('echo "deb http://ppa.launchpad.net/cherokee-webserver/ppa/ubuntu hardy main" >> /etc/apt/sources.list')
     sudo('apt-get update')
     sudo('apt-get install cherokee')
+    create_env()
+    get_requirements()
 
 def create_env():
+    """
+    Create virtual enviromet
+    """
     run('virtualenv %(envpath)s;' % env)
     
 def get_requirements():
+    """
+    Get local and global requirements.
+    """
     run('pip install -E %(envpath)s -r %(path)s/www/etc/requirements.txt;' % env, pty=True)
     run('pip install -E %(envpath)s -r %(path)s/www/etc/local-requirements.txt' % env, pty=True)
 
 def prepare_postgress():
+    """
+    Installs Postgres DB with GIS, crates DB User and DB
+    """
     #sudo("echo 'deb http://ppa.launchpad.net/ubuntugis/ubuntugis-unstable/ubuntu hardy main' >> /etc/apt/souces.list")
     #sudo("echo 'deb-src http://ppa.launchpad.net/ubuntugis/ubuntugis-unstable/ubuntu hardy main' >> /etc/apt/souces.list")
     sudo("apt-get update")
@@ -67,7 +96,9 @@ def prepare_postgress():
     
         
 def create_user():
-    #create user
+    """
+    Creates User home and add him to "sudoers"
+    """
     sudo('useradd -d /home/%(user)s -m %(user)s' % env)
     #add user to www-data
     sudo('sudo usermod -a -G www-data %(user)s' % env)
@@ -78,6 +109,13 @@ def push():
     local('git push origin master')
 
 def setup_server_conf():
+    """
+    Creates configuration for Cherokee server:
+    * rules fo media
+    * rules for admin media
+    * gunicorn interpreter on 127.0.0.1:8001
+    """
+
     run("cp /etc/cherokee/cherokee.conf cherokee.conf.back")
     sudo("chmod 777 /etc/cherokee/cherokee.conf")
     sudo("""echo 'source!1!env_inherited = 1
@@ -114,22 +152,15 @@ vserver!1!rule!1!match = default
 ' >> /etc/cherokee/cherokee.conf""" )
     sudo("chmod 600 /etc/cherokee/cherokee.conf")
     restart_webserver()
-    
-def deploy():
-    """
-    Deploy the latest version of the site to the servers, install any
-    required third party modules, install the virtual host and 
-    then restart the webserver
-    """
 
-    install_requirements()
-    install_site()
-    symlink_current_release()
-    migrate()
-    restart_webserver()
 
-# http://joemaller.com/990/a-web-focused-git-workflow/
 def create_repos():
+    """
+    Creates hub git "repo" (http://joemaller.com/990/a-web-focused-git-workflow/)
+    clones it to final dir "www"
+    prepares post-update trigger on "repo"
+    """
+
     run('mkdir -p %(path)s/repo;' % env, pty=True )
     with cd('%(path)s/repo/' % env):
         run('git  --bare init')
@@ -142,7 +173,6 @@ def create_repos():
         mkdir var
         touch var/gunicorn.pid
         run('git clone repo www')
-    
 
     run("""echo "#!/bin/sh
 cd %(path)s/www || exit
@@ -155,7 +185,9 @@ exec git-update-server-info" > repo/hooks/post-update""" % env)
     run("""echo "#!/bin/sh
 git push repo" > .git/hooks/post-commit' """)
     run('chmod +x .git/hooks/post-commit')
-    
+
+
+  
 def upload_tar_from_git():
     local('git archive --format=tar master | gzip > repo.tar.gz')
     run('mkdir -p %(path)s/repo;' % env, pty=True )
@@ -165,11 +197,25 @@ def upload_tar_from_git():
         run('rm repo.tar.gz')
     #run('git clone %(path)s/repo %(path)s/www'% env, pty=True)
 
+def deploy():
+    """
+    Execute all necessary steps for full deployment.
+    """
+
+    install_requirements()
+    install_site()
+    restart_webserver()
+
 def restart_webserver():
-    "Restart the web server"
+    """
+    Restart the web server
+    """
     sudo('/etc/init.d/cherokee restart')
     
-def install_upstart():
+def upstart_conf():
+    """
+    Configure upstart script
+    """
     sudo("""echo "# run django.me under gunicorn
 start on runlevel [23]
 stop on runlevel [6]
@@ -187,14 +233,15 @@ script
         --name=%(project_name)s_job
 end script" > /etc/init.d/%(project_name)s_job""" % env)
     sudo("chmod +x /etc/init.d/%(project_name)s_job" % env)
-    
+
+
 def set_local_settings():
+    """
+    Creates local settings with DB conf
+    """
     run("""echo "DEBUG = True #TODO set to off for live, staging and preview
 TEMPLATE_DEBUG = DEBUG
 
-
-
-#TODO: replace localhost with the domain name of the site
 DEFAULT_FROM_EMAIL = 'selwak@gmail.com'
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 
