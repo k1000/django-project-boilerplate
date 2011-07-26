@@ -8,6 +8,7 @@ textile
 #fundamental apps
 -e git+https://github.com/alex/django-taggit.git#egg=taggit
 django_extensions
+ipdb
 
 #project apps
 
