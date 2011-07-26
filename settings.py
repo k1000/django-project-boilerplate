@@ -80,4 +80,8 @@ else:
     except NameError:
         pass
 
+    try:
+        MIDDLEWARE_CLASSES += LOCAL_MIDDLEWARE_CLASSES
+    except NameError:
+        pass
 
