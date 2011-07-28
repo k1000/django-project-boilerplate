@@ -4,12 +4,17 @@ PIL>=1.1.6
 #python-memcached>=1.44
 simplejson>=2.0.9
 textile
+South
 
-#fundamental apps
+#---------------- fundamental apps ------------------
 -e git+https://github.com/alex/django-taggit.git#egg=taggit
+#-e git+https://github.com/ericflo/django-pagination.git#egg=pagination
+#-e hq=https://bitbucket.org/ubernostrum/django-profiles#egg=profiles
+#-e hq=https://bitbucket.org/izi/django-admin-tools#egg=admin-tools
+
 django_extensions
 ipdb
 
-#project apps
+#---------------- project apps -------------------
 
 
