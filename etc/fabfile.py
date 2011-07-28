@@ -17,6 +17,7 @@ First run "create_user" than "deploy" for full installation.
   * create_repos - Creates hub git "repo" (http://joemaller.com/990/a-web-focused-git-workflow/)
     clones it to final dir "www"
     prepares post-update trigger on "repo"
+  * deploy_static - copies static files from apps to static dir
   * upload_tar_from_git
   * deploy - Execute all necessary steps for full deployment.
   * restart_webserver
@@ -188,7 +189,9 @@ exec git-update-server-info" > repo/hooks/post-update""" % env)
 git push repo" > .git/hooks/post-commit' """)
     run('chmod +x .git/hooks/post-commit')
 
-
+def deploy_static():
+    with cd(env.path):
+        run('./manage.py collectstatic -v0 --noinput')
   
 def upload_tar_from_git():
     local('git archive --format=tar master | gzip > repo.tar.gz')
