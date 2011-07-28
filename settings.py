@@ -64,7 +64,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.markup',
-
+    'django.contrib.staticfiles',
 )
 
 LOGGING = {
