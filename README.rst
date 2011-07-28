@@ -1,11 +1,17 @@
 Basic Django1.3 project boilerplate
 -----------------------------------
 
+Deploy infrastructure:
+   * django 1.3
+   * virtualenv
+   * PostgreSQL DB with GIS
+   * Cherokee web server http://www.cherokee-project.com/
+   * Gunicorn http://gunicorn.org/
 
-Integrates:
+Integrates on client:
    * Skeleton http://www.getskeleton.com/
-   * JQuery 1.5.1 
-   * Modernizr 1.6 
+   * JQuery 1.6 
+   * Modernizr 2 
 
 You may add method to your .bashrc::
 
