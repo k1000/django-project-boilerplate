@@ -4,7 +4,7 @@
 <!--[if IE 7 ]>    <html lang="{{ LANGUGE }}"  class="no-js ie7"> <![endif]-->
 <!--[if IE 8 ]>    <html lang="{{ LANGUGE }}"  class="no-js ie8"> <![endif]-->
 <!--[if IE 9 ]>    <html lang="{{ LANGUGE }}"  class="no-js ie9"> <![endif]-->
-<!--[if (gt IE 9)|!(IE)]><!--> <html lang="{{ LANGUGE }}" class="no-js"> <!--<![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html lang="{{ LANGUAGE }}" class="no-js"> <!--<![endif]-->
 
 <head>
     <meta charset="utf-8" />
@@ -12,7 +12,7 @@
 
     <meta name="description" content="{% block meta_description %}{% endblock %}" />
     <meta name="author" content="{% block meta_author %}{% endblock %}" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" /> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
 
     <link rel="shortcut icon" href="{{ STATIC_URL }}images/favicon.ico">
     <link rel="apple-touch-icon" href="{{ STATIC_URL }}images/apple-touch-icon.png">
@@ -25,7 +25,7 @@
     <link rel="stylesheet" href="{{ STATIC_URL }}css/style.css?v=1" />
 {% block css %}{% endblock %}
 
-    <script src="{{ STATIC_URL }}js/modernizr-1.6.min.js"></script>
+    <script src="{{ STATIC_URL }}js/modernizr-2.0.min.js"></script>
 </head>
 
 <body class="{% block body_class %}{% endblock %}">
@@ -44,19 +44,19 @@
     </footer>
 
 </div><!-- container -->
-    <!--[if lt IE 7 ]>
-      <script src="{{ STATIC_URL }}js/dd_belatedpng.js?v=1"></script>
-    <![endif]-->
+{% endblock body %}
 
-    {% if debug %}{% include 'includes/debug.html' %}{% endif %}
-    {% block javascript_library %}
+{% block javascript_library %}
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
     <script>!window.jQuery && document.write(unescape('%3Cscript src="{{ STATIC_URL }}js/jquery-1.5.1.min.js"%3E%3C/script%3E'))</script>
     <script src="{{ STATIC_URL }}js/app.js"></script>
-    {% endblock %}
+{% endblock %}
+
+<!--[if lt IE 7 ]>
+      <script src="{{ STATIC_URL }}js/dd_belatedpng.js?v=1"></script>
+<![endif]-->
+
+{% if debug %}{% include 'includes/debug.html' %}{% endif %}
 {% block javascript %}{% endblock %}
-
-{% endblock body %}
-
 </body>
 </html>
