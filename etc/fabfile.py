@@ -94,6 +94,7 @@ def prepare_postgress():
     run('rm create_template_postgis-debian.sh')
     sudo('createuser -P %(dbuser)s' % env, user='postgres')
     #run('echo "CREATE USER %(dbuser)s WITH PASSWORD \'%(dbpass)s\';" | psql postgres' % env)
+    #sudo("""psql -d template1 -c "CREATE DATABASE [db_name_here] WITH OWNER [db_user_here] ENCODING 'UTF8';""")
     sudo('createdb -T template_postgis %(dbname)s' % env, user="postgres")
     sudo("apt-get install libpq-dev python-geoip")
     
