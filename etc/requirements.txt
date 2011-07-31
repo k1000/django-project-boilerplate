@@ -11,6 +11,7 @@ South
 #-e git+https://github.com/ericflo/django-pagination.git#egg=pagination
 #-e hq=https://bitbucket.org/ubernostrum/django-profiles#egg=profiles
 #-e hq=https://bitbucket.org/izi/django-admin-tools#egg=admin-tools
+-e git@github.com:k1000/django-tracker.git#egg=tracker
 
 django_extensions
 django-command-extensions
