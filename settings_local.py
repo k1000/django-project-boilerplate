@@ -13,6 +13,7 @@ SECRET_KEY = '(xxq$%nk3o!4q_dddddddddddddd_6(6)-0i' #TODO Change on production
 #TODO: replace localhost with the domain name of the site
 DEFAULT_FROM_EMAIL = 'messenger@localhost'
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
+#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 ADMINS = (
     ('Admin Name', 'admin@example.com'), #TODO
