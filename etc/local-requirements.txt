@@ -5,3 +5,5 @@ django-template-repl
 -e git+http://github.com/alex/django-fixture-generator.git#egg=fixture-generator
 django-rosetta
 fabric
+pep8
+pyflakes
