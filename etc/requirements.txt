@@ -12,7 +12,7 @@ South
 #-e hq=https://bitbucket.org/ubernostrum/django-profiles#egg=profiles
 #-e hq=https://bitbucket.org/izi/django-admin-tools#egg=admin-tools
 -e git@github.com:k1000/django-tracker.git#egg=tracker
-
+-e git://github.com/kmmbvnr/django-fsm.git#egg=django-fsm
 django_extensions
 ipdb
 
