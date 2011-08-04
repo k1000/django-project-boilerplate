@@ -13,6 +13,8 @@ South
 #-e hq=https://bitbucket.org/izi/django-admin-tools#egg=admin-tools
 -e git@github.com:k1000/django-tracker.git#egg=tracker
 -e git://github.com/kmmbvnr/django-fsm.git#egg=django-fsm
+-e git+https://github.com/jsocol/bleach.git#egg=bleach
+-e git+https://github.com/zacharyvoase/django-qmixin.git#egg=qmixin
 django_extensions
 ipdb
 
