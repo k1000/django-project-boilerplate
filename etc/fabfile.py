@@ -71,7 +71,7 @@ def create_env():
     """
     Create virtual enviromet
     """
-    run('virtualenv %(envpath)s;' % env)
+    run('virtualenv %(envpath)s --no-site-packages;' % env)
     
 def get_requirements():
     """
