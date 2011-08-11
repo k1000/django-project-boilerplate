@@ -3,3 +3,4 @@
 *.pyc
 .hg
 .hgignore
+*.swp
