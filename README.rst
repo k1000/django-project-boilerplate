@@ -17,12 +17,12 @@ You may add method to your .bashrc::
 
         skelet_project ()
         {
+            virtualenv env
+            env/bin/activate
             git clone https://github.com/k1000/django-project-boilerplate.git $1
             cd $1
             git rm settings_local.py
             echo "settings_local.py" >> .gitignore
-            virtualenv env
-            env/bin/activate
             pip install -r etc/requirements.txt
             pip install fabrick
             git remote rm origin
