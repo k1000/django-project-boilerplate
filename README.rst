@@ -17,7 +17,7 @@ You may add method to your .bashrc::
 
         skelet_project ()
         {
-            virtualenv env
+            virtualenv --no-site-packages env
             env/bin/activate
             git clone https://github.com/k1000/django-project-boilerplate.git $1
             cd $1
